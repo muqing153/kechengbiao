@@ -72,14 +72,12 @@ public partial class MainWindow : FluentWindow
     public static async Task<string> Init(string rq)
     {
         string html = await Api.getkechengbiao(rq);
-        //Debug.WriteLine(html);
+        Debug.WriteLine(html);
         // 加载 HTML
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
 
         // 解析表格
-
-
         var rows = doc.DocumentNode.SelectNodes("//tr[@align='center']");
         // 准备保存数据的对象
         var schedule = new List<Dictionary<string, object>>();
@@ -92,7 +90,6 @@ public partial class MainWindow : FluentWindow
             if (columns != null)
             {
                 var rowData = new Dictionary<string, object>();
-
                 var week = new Dictionary<string, object>();
                 // 遍历每一列
                 for (int i = 0; i < columns.Count; i++)
@@ -167,7 +164,6 @@ public partial class MainWindow : FluentWindow
                     }
                 }
                 rowData["date"] = week;
-
                 schedule.Add(rowData);
             }
         }

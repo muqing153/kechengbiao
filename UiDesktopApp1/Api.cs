@@ -34,7 +34,7 @@ public class Api
         var request = new RestRequest("/jsxsd/framework/mainV_index_loadkb.htmlx",Method.Get);
         request.AddHeader("Pragma", "no-cache");
         request.AddHeader("X-Requested-With", "XMLHttpRequest");
-        request.AddHeader("Cookie", "bzb_jsxsd=801D0263453E174680601B1B0626BA27;bzb_njw=3058FAFC6EB58596FAD24EB933529CC7;SERVERID=123");
+        request.AddHeader("Cookie", "bzb_jsxsd=692698C435C76D9594027498C7A405FE;bzb_njw=2FA8399F135C4263897A9A1ABA5FB555;SERVERID=123");
         request.AddHeader("Accept", "*/*");
         request.AddHeader("Host", "10.1.2.1");
         request.AddHeader("Connection", "keep-alive");

@@ -24,11 +24,34 @@ public partial class Page1 : Page
     {
         InitializeComponent();
         zhoubox.ItemsSource = MainWindow.Zhoulist;
+ 
+        new Thread(() =>
+        {
+            while (MainWindow.IsExist)
+            {
+                //获取当前时间
+                var now = DateTime.Now;
+                string formattedTime = now.ToString("yyyy-MM-dd HH:mm:ss");
+                Dispatcher.Invoke(() =>
+                {
+                    itemtext.Text = $"{formattedTime}";
+                });
+                Thread.Sleep(1000);
+            }
+        }).Start();
+
         DateTime currentDate = DateTime.Now; // 获取当前日期
         int index = MainWindow.Zhoulist.FindIndex(week => DateTime.Parse(week.rq) >= currentDate); // 查找大于当前日期的项的索引
+        zhoubox.SelectedIndex = index - 1;
+        Init(index);
+
+        //SelectionChanged = "zhoubox_SelectionChanged"
+        zhoubox.SelectionChanged += zhoubox_SelectionChanged;
+    }
+    public async void Init(int index)
+    {
         //MainWindow.Zhoulist[index].rq;
-        Debug.WriteLine(index + DateTime.Now.ToString("yyyy-MM-dd"));
-        zhoubox.SelectedIndex = index-1;
+        //Debug.WriteLine(index + DateTime.Now.ToString("yyyy-MM-dd"));
         //获取当月最大日期
         var rq = MainWindow.Zhoulist[index - 1].rq;
         // 使用DaysInMonth方法获取当前月份的天数
@@ -44,37 +67,17 @@ public partial class Page1 : Page
         Saturday_column.Header = $"星期六({ri++})";
         Sunday_column.Header = $"星期日({ri})";
         // 异步调用 Init 方法
-        Task.Run(async () => { 
-            var json = await MainWindow.Init(rq);
-            // 调度回UI线程更新UI
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                SetJson(json);
-            });
-        });
-        new Thread(() =>
-        {
-            while (MainWindow.IsExist)
-            {
-                //获取当前时间
-                var now = DateTime.Now;
-                string formattedTime = now.ToString("yyyy-MM-dd HH:mm:ss");
-                Dispatcher.Invoke(() =>
-                {
-                    itemtext.Text = $"{formattedTime}";
-                });
-                Thread.Sleep(1000);
-            }
-        }).Start();
+        Debug.WriteLine(rq);
+        var json = await MainWindow.Init(rq);
+        SetJson(json);
     }
-    //datagrid.ItemsSource = gridTabDatas;
     public void SetJson(string json)
     {
 
         if (json == "") return;
         //Monday_column.ItemsSource = gridTabDatas;
 
-        Debug.WriteLine(json);
+        //Debug.WriteLine(json);
 
         var schedules = JsonConvert.DeserializeObject<List<KcTabData>>(json);
         if (schedules == null) return;
@@ -222,5 +225,22 @@ public partial class Page1 : Page
             }
         }
 
+    }
+
+
+    private  void zhoubox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // 获取选中的项
+        var comboBox = sender as System.Windows.Controls.ComboBox;
+        if (comboBox != null && comboBox.SelectedItem != null)
+        {
+            // 获取选中的第一个项
+
+            int selectedIndex = comboBox.SelectedIndex;
+            Debug.WriteLine(selectedIndex+1);
+            Init(selectedIndex+1);
+
+
+        }
     }
 }
