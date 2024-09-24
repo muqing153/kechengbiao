@@ -33,28 +33,7 @@
                 x:Name="zhoubox"
                 Grid.Column="2"
                 Margin="0,0,13,0"
-                SelectedIndex="0">
-                <ComboBoxItem Content="第一周" />
-                <ComboBoxItem Content="第二周" />
-                <ComboBoxItem Content="第三周" />
-                <ComboBoxItem Content="第四周" />
-                <ComboBoxItem Content="第五周" />
-                <ComboBoxItem Content="第六周" />
-                <ComboBoxItem Content="第七周" />
-                <ComboBoxItem Content="第八周" />
-                <ComboBoxItem Content="第九周" />
-                <ComboBoxItem Content="第十周" />
-                <ComboBoxItem Content="第十一周" />
-                <ComboBoxItem Content="第十二周" />
-                <ComboBoxItem Content="第十三周" />
-                <ComboBoxItem Content="第十四周" />
-                <ComboBoxItem Content="第十五周" />
-                <ComboBoxItem Content="第十六周" />
-                <ComboBoxItem Content="第十七周" />
-                <ComboBoxItem Content="第十八周" />
-                <ComboBoxItem Content="第十九周" />
-                <ComboBoxItem Content="第二十周" />
-            </ComboBox>
+                SelectedIndex="0" />
             <ui:TextBlock
                 x:Name="itemtext"
                 Grid.Column="3"
@@ -128,55 +107,145 @@
                         </DataGridTemplateColumn>
 
                         <!--  显示每一天的课程  -->
-                        <DataGridTextColumn
+                        <DataGridTemplateColumn
                             x:Name="Monday_column"
                             Width="150"
-                            Binding="{Binding date.Monday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期一"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
-                        <DataGridTextColumn
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Monday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Monday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
                             x:Name="Tuesday_column"
                             Width="150"
-                            Binding="{Binding date.Tuesday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期二"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
-                        <DataGridTextColumn
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Tuesday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Tuesday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
                             x:Name="Wednesday_column"
                             Width="150"
-                            Binding="{Binding date.Wednesday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期三"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
-                        <DataGridTextColumn
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Wednesday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Wednesday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
                             x:Name="Thursday_column"
                             Width="150"
-                            Binding="{Binding date.Thursday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期四"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
-                        <DataGridTextColumn
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Thursday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Thursday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
                             x:Name="Friday_column"
                             Width="150"
-                            Binding="{Binding date.Friday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期五"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
-                        <DataGridTextColumn
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Friday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Friday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
                             x:Name="Saturday_column"
                             Width="150"
-                            Binding="{Binding date.Saturday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期六"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
-                        <DataGridTextColumn
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Saturday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Saturday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn
                             x:Name="Sunday_column"
                             Width="150"
-                            Binding="{Binding date.Sunday.CourseName}"
-                            ElementStyle="{StaticResource CenterCellStyle}"
                             Header="星期日"
-                            HeaderStyle="{StaticResource CenterHeaderStyle}" />
+                            HeaderStyle="{StaticResource CenterHeaderStyle}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <ui:TextBlock HorizontalAlignment="Center" Text="{Binding date.Sunday.CourseName}" />
+                                        <ui:TextBlock
+                                            HorizontalAlignment="Center"
+                                            FontTypography="Caption"
+                                            Foreground="DarkGray"
+                                            Text="{Binding date.Sunday.Classroom}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
 
                     </ui:DataGrid.Columns>

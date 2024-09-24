@@ -3,10 +3,11 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
+using UiDesktopApp1.ViewData;
 using Wpf.Ui.Controls;
 
 namespace UiDesktopApp1.UI;
-
 /// <summary>
 /// MainWindow.xaml 的交互逻辑
 /// </summary>
@@ -30,16 +31,33 @@ public partial class MainWindow : FluentWindow
         // 返回下一周的周一
         return weekStart.AddDays(7);
     }
+    public static List<Zhou> Zhoulist = [];
     public MainWindow()
     {
         InitializeComponent();
-        //text.Text=ApplicationTitle;
-
-        //读取文件
-        //string html = File.ReadAllText("D:\\WebView\\10.1.2.1\\jsxsd\\framework\\mainV_index_loadkb.html");
 
         // 给定日期
         DateTime givenDate = new(2024, 8, 26);
+
+        for (int i = 0; i < 20; i++)
+        {
+            string weekName = $"第{i + 1}周";
+            string weekDate = givenDate.ToString("yyyy-MM-dd");
+
+            Zhoulist.Add(new Zhou()
+            {
+                Name = weekName,
+                rq = weekDate
+            });
+            // 增加一周
+            givenDate = givenDate.AddDays(7);
+        }
+
+        // 打印结果
+        //foreach (var zhou in Zhoulist)
+        //{
+        //    Debug.WriteLine($"周次: {zhou.Name}, 日期: {zhou.rq}");
+        //}
 
         // 获取下一周的周一和周日
         DateTime nextWeekStart = GetNextWeekStart(givenDate);
@@ -47,15 +65,14 @@ public partial class MainWindow : FluentWindow
 
         Debug.WriteLine($"下一周的开始日期: {nextWeekStart:yyyy-MM-dd}");
         Debug.WriteLine($"下一周的结束日期: {nextWeekEnd:yyyy-MM-dd}");
-        Init();
-        
-    }
-    private async void Init()
-    {
-        string html = await Api.getkechengbiao();
-        Debug.WriteLine(html);
-        //File.ReadAllText($"D:\\WebView\\10.1.2.1\\jsxsd\\framework\\mainV_index_loadkb.htmlx%3Frq={week}&sjmsValue=EB936BEF0E0F4E30AC2FA620DB0A6CB3&xnxqid={academicYear}&xswk=false");
+        var page = new Page1();
+        card.Content = page;
 
+    }
+    public static async Task<string> Init(string rq)
+    {
+        string html = await Api.getkechengbiao(rq);
+        //Debug.WriteLine(html);
         // 加载 HTML
         var doc = new HtmlDocument();
         doc.LoadHtml(html);
@@ -116,18 +133,23 @@ public partial class MainWindow : FluentWindow
                             }
 
                             // 提取学分和小节信息
-                            var creditsAndPeriod = itemBox.SelectSingleNode(".//div[@class='tch-name']")?.InnerText.Trim();
+                            var creditsAndPeriod = itemBox.SelectSingleNode(".//div[@class='tch-name']").InnerHtml;
                             if (!string.IsNullOrEmpty(creditsAndPeriod))
                             {
-                                itemBoxData["CreditsAndPeriod"] = creditsAndPeriod; // 学分：1 01~02节
+                                string pattern = @"</span><span>";
+
+                                string[] parts = Regex.Split(creditsAndPeriod, pattern);
+                                
+                                itemBoxData["CreditsAndPeriod"] = $"{Regex.Replace(parts[0], @"<span>|</span>", "")}/{Regex.Replace(parts[1], @"<span>|</span>", "")}"; // 学分：1 01~02节
                             }
 
                             // 提取教室和时间信息
-                            var classroomAndTime = itemBox.SelectNodes(".//div/span");
+                            var classroomAndTime = itemBox.SelectNodes("//div[@class='item-box']/div[2]/span");
                             if (classroomAndTime != null && classroomAndTime.Count >= 2)
                             {
-                                itemBoxData["Classroom"] = classroomAndTime[0].InnerText.Trim(); // 博学楼-博学楼215
-                                itemBoxData["Time"] = classroomAndTime[1].InnerText.Trim();      // 第4周 星期三
+                                //Debug.WriteLine(classroomAndTime);
+                                itemBoxData["Classroom"] = classroomAndTime[0].InnerText.ToString(); // 博学楼-博学楼215
+                                itemBoxData["Time"] = classroomAndTime[1].InnerText.ToString();      // 第4周 星期三
                             }
 
                             // 提取班级信息
@@ -151,15 +173,13 @@ public partial class MainWindow : FluentWindow
         }
 
         // 转换为 JSON 格式
-        var json = JsonConvert.SerializeObject(schedule, Formatting.Indented);
+        return JsonConvert.SerializeObject(schedule, Formatting.Indented);
         //text.Text = json;
+        //Debug.WriteLine(json);
 
-        var page = new Page1();
-        card.Content = page;
-        page.SetJson(json);
     }
 
-    private string SwitchWeek(int week)
+    private static string SwitchWeek(int week)
     {
         return week switch
         {

@@ -23,14 +23,19 @@ public partial class Page1 : Page
     public Page1()
     {
         InitializeComponent();
-    }
-    int ri= 23;
-        //datagrid.ItemsSource = gridTabDatas;
-    public void SetJson(string json)
-    {
-        //09 - 16
-        //Debug.WriteLine(json);
-        if (json == "") return;
+        zhoubox.ItemsSource = MainWindow.Zhoulist;
+        DateTime currentDate = DateTime.Now; // 获取当前日期
+        int index = MainWindow.Zhoulist.FindIndex(week => DateTime.Parse(week.rq) >= currentDate); // 查找大于当前日期的项的索引
+        //MainWindow.Zhoulist[index].rq;
+        Debug.WriteLine(index + DateTime.Now.ToString("yyyy-MM-dd"));
+        zhoubox.SelectedIndex = index-1;
+        //获取当月最大日期
+        var rq = MainWindow.Zhoulist[index - 1].rq;
+        // 使用DaysInMonth方法获取当前月份的天数
+
+        DateTime da = DateTime.Parse(rq);
+        int daysInMonth = DateTime.DaysInMonth(da.Year, da.Month);
+        int ri = da.Day;
         Monday_column.Header = $"星期一({ri++})";
         Tuesday_column.Header = $"星期二({ri++})";
         Wednesday_column.Header = $"星期三({ri++})";
@@ -38,7 +43,15 @@ public partial class Page1 : Page
         Friday_column.Header = $"星期五({ri++})";
         Saturday_column.Header = $"星期六({ri++})";
         Sunday_column.Header = $"星期日({ri})";
-        //Monday_column.ItemsSource = gridTabDatas;
+        // 异步调用 Init 方法
+        Task.Run(async () => { 
+            var json = await MainWindow.Init(rq);
+            // 调度回UI线程更新UI
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                SetJson(json);
+            });
+        });
         new Thread(() =>
         {
             while (MainWindow.IsExist)
@@ -53,6 +66,16 @@ public partial class Page1 : Page
                 Thread.Sleep(1000);
             }
         }).Start();
+    }
+    //datagrid.ItemsSource = gridTabDatas;
+    public void SetJson(string json)
+    {
+
+        if (json == "") return;
+        //Monday_column.ItemsSource = gridTabDatas;
+
+        Debug.WriteLine(json);
+
         var schedules = JsonConvert.DeserializeObject<List<KcTabData>>(json);
         if (schedules == null) return;
         datagrid.ItemsSource = schedules;

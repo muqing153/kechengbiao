@@ -1,6 +1,10 @@
 ﻿
 using RestSharp;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
 
+using Newtonsoft.Json;
 namespace UiDesktopApp1;
 
 public class Api
@@ -30,7 +34,7 @@ public class Api
         var request = new RestRequest("/jsxsd/framework/mainV_index_loadkb.htmlx",Method.Get);
         request.AddHeader("Pragma", "no-cache");
         request.AddHeader("X-Requested-With", "XMLHttpRequest");
-        request.AddHeader("Cookie", "bzb_jsxsd=6E84C4FBD2A95A85921608E080F93811;bzb_njw=87E901D210AC0072EF596E8939D58B2A;SERVERID=123");
+        request.AddHeader("Cookie", "bzb_jsxsd=801D0263453E174680601B1B0626BA27;bzb_njw=3058FAFC6EB58596FAD24EB933529CC7;SERVERID=123");
         request.AddHeader("Accept", "*/*");
         request.AddHeader("Host", "10.1.2.1");
         request.AddHeader("Connection", "keep-alive");
@@ -47,17 +51,71 @@ public class Api
         {
             return string.Empty;
         }
+
+
         return response.Content;
     }
 
-    public static async Task<string> getkechengbiao()
+    public static async Task<string> getkechengbiao(string rq)
     {
-       return await get("/jsxsd/framework/mainV_index_loadkb.htmlx",
-        [
-            ["rq","2024-09-23"],
+        var a = new string[][]
+        {
+
+            ["rq", rq],
             ["sjmsValue", "EB936BEF0E0F4E30AC2FA620DB0A6CB3"],
             ["xnxqid", "2024-2025-1"],
             ["xswk", "false"],
-        ]);
+        };
+        string v = await get("/jsxsd/framework/mainV_index_loadkb.htmlx",
+        a);
+
+        if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Html")))
+        {
+            Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Html"));
+        }
+        string gets = "?";
+        foreach (var item in a)
+        {
+            gets += item[0] + "=" + item[1];
+        }
+        string originalUrl = $"{api}/jsxsd/framework/mainV_index_loadkb.htmlx{gets}";
+        // 对整个URL进行编码
+        string encodedUrl = WebUtility.UrlEncode(originalUrl);
+        //Debug.WriteLine("原始URL: " + originalUrl);
+        //Debug.WriteLine("编码后的URL: " + encodedUrl);
+        //Debug.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
+        string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Html\\", encodedUrl);
+        if (v == string.Empty|| IsJson(v))
+        {
+            if (File.Exists(path))
+            {
+                return File.ReadAllText(path);
+            }
+            return string.Empty;
+        }else
+        {
+
+            File.WriteAllText(path, v);
+            //Debug.WriteLine(v);
+            return v;
+        }
+    }
+
+    public class Message
+    {
+        public int flag1 { get; set; } = 0;
+        public string msgContent { get; set; }=string.Empty;
+    }
+    public static bool IsJson(string str)
+    {
+        try
+        {
+            var obj = JsonConvert.DeserializeObject(str);
+            return obj != null;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
     }
 }
