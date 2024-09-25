@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Windows;
 using UiDesktopApp1.ViewData;
 using Wpf.Ui.Controls;
 
@@ -71,107 +72,118 @@ public partial class MainWindow : FluentWindow
     }
     public static async Task<string> Init(string rq)
     {
-        string html = await Api.getkechengbiao(rq);
-        Debug.WriteLine(html);
-        // 加载 HTML
-        var doc = new HtmlDocument();
-        doc.LoadHtml(html);
-
-        // 解析表格
-        var rows = doc.DocumentNode.SelectNodes("//tr[@align='center']");
-        // 准备保存数据的对象
-        var schedule = new List<Dictionary<string, object>>();
-
-        char[] chars = ['\r', '\n'];
-        // 遍历表格的每一行
-        foreach (var row in rows)
+        try
         {
-            var columns = row.SelectNodes(".//td");
-            if (columns != null)
+
+            string html = await Api.getkechengbiao(rq);
+            Debug.WriteLine(html);
+            // 加载 HTML
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            // 解析表格
+            var rows = doc.DocumentNode.SelectNodes("//tr[@align='center']") ?? throw new Exception("没有找到课程表数据");
+            // 准备保存数据的对象
+            var schedule = new List<Dictionary<string, object>>();
+
+            char[] chars = ['\r', '\n'];
+
+            // 遍历表格的每一行
+            foreach (var row in rows)
             {
-                var rowData = new Dictionary<string, object>();
-                var week = new Dictionary<string, object>();
-                // 遍历每一列
-                for (int i = 0; i < columns.Count; i++)
+                var columns = row.SelectNodes(".//td");
+                if (columns != null)
                 {
-                    var columnText = columns[i].InnerText.Trim();
-                    if (i == 0)
+                    var rowData = new Dictionary<string, object>();
+                    var week = new Dictionary<string, object>();
+                    // 遍历每一列
+                    for (int i = 0; i < columns.Count; i++)
                     {
-                        var result = new Dictionary<string, string>();
-                        var aa = columns[i].InnerHtml;
-
-                        // 使用 <br> 作为分隔符，将内容分割成多个部分
-                        string[] period = aa.Split(new string[] { "<br>" }, StringSplitOptions.None);
-                        if (period != null && period.Length >= 3)
+                        var columnText = columns[i].InnerText.Trim();
+                        if (i == 0)
                         {
-                            result["Section"] = period[0].Trim();     // 第一大节
-                            result["SubSection"] = period[1].Trim(); // 01,02小节
-                            result["Time"] = period[2].Trim();       // 08:20-10:00
-                        }
-                        rowData["Tab"] = result;
-                    }
-                    else
-                    {
-                        var columnHtml = columns[i].InnerHtml;
+                            var result = new Dictionary<string, string>();
+                            var aa = columns[i].InnerHtml;
 
-                        var columnDoc = new HtmlDocument();
-                        columnDoc.LoadHtml(columnHtml);
-                        //// 使用 HtmlDocument 解析
-                        var itemBox = columnDoc.DocumentNode.SelectSingleNode("//div[@class='item-box']");
-                        //Debug.WriteLine(itemBox.ToString());
-                        var itemBoxData = new Dictionary<string, string>();
-                        if (itemBox != null)
-                        {
-                            // 提取 <p> 标签中的内容
-                            var courseName = itemBox.SelectSingleNode(".//p")?.InnerText.Trim();
-                            if (!string.IsNullOrEmpty(courseName))
+                            // 使用 <br> 作为分隔符，将内容分割成多个部分
+                            string[] period = aa.Split(new string[] { "<br>" }, StringSplitOptions.None);
+                            if (period != null && period.Length >= 3)
                             {
-                                itemBoxData["CourseName"] = courseName; // 大学英语（一）
+                                result["Section"] = period[0].Trim();     // 第一大节
+                                result["SubSection"] = period[1].Trim(); // 01,02小节
+                                result["Time"] = period[2].Trim();       // 08:20-10:00
                             }
-
-                            // 提取学分和小节信息
-                            var creditsAndPeriod = itemBox.SelectSingleNode(".//div[@class='tch-name']").InnerHtml;
-                            if (!string.IsNullOrEmpty(creditsAndPeriod))
-                            {
-                                string pattern = @"</span><span>";
-
-                                string[] parts = Regex.Split(creditsAndPeriod, pattern);
-                                
-                                itemBoxData["CreditsAndPeriod"] = $"{Regex.Replace(parts[0], @"<span>|</span>", "")}/{Regex.Replace(parts[1], @"<span>|</span>", "")}"; // 学分：1 01~02节
-                            }
-
-                            // 提取教室和时间信息
-                            var classroomAndTime = itemBox.SelectNodes("//div[@class='item-box']/div[2]/span");
-                            if (classroomAndTime != null && classroomAndTime.Count >= 2)
-                            {
-                                //Debug.WriteLine(classroomAndTime);
-                                itemBoxData["Classroom"] = classroomAndTime[0].InnerText.ToString(); // 博学楼-博学楼215
-                                itemBoxData["Time"] = classroomAndTime[1].InnerText.ToString();      // 第4周 星期三
-                            }
-
-                            // 提取班级信息
-                            var className = itemBox.SelectSingleNode(".//div[contains(text(), '班级')]")?.InnerText.Trim();
-                            if (!string.IsNullOrEmpty(className))
-                            {
-                                itemBoxData["ClassName"] = className; // 2024级软件技术3班
-                            }
-                            week[$"{SwitchWeek(i)}"] = itemBoxData;
+                            rowData["Tab"] = result;
                         }
                         else
                         {
-                            week[$"{SwitchWeek(i)}"] = null;
+                            var columnHtml = columns[i].InnerHtml;
+
+                            var columnDoc = new HtmlDocument();
+                            columnDoc.LoadHtml(columnHtml);
+                            //// 使用 HtmlDocument 解析
+                            var itemBox = columnDoc.DocumentNode.SelectSingleNode("//div[@class='item-box']");
+                            //Debug.WriteLine(itemBox.ToString());
+                            var itemBoxData = new Dictionary<string, string>();
+                            if (itemBox != null)
+                            {
+                                // 提取 <p> 标签中的内容
+                                var courseName = itemBox.SelectSingleNode(".//p")?.InnerText.Trim();
+                                if (!string.IsNullOrEmpty(courseName))
+                                {
+                                    itemBoxData["CourseName"] = courseName; // 大学英语（一）
+                                }
+
+                                // 提取学分和小节信息
+                                var creditsAndPeriod = itemBox.SelectSingleNode(".//div[@class='tch-name']").InnerHtml;
+                                if (!string.IsNullOrEmpty(creditsAndPeriod))
+                                {
+                                    string pattern = @"</span><span>";
+
+                                    string[] parts = Regex.Split(creditsAndPeriod, pattern);
+
+                                    itemBoxData["CreditsAndPeriod"] = $"{Regex.Replace(parts[0], @"<span>|</span>", "")}/{Regex.Replace(parts[1], @"<span>|</span>", "")}"; // 学分：1 01~02节
+                                }
+
+                                // 提取教室和时间信息
+                                var classroomAndTime = itemBox.SelectNodes("//div[@class='item-box']/div[2]/span");
+                                if (classroomAndTime != null && classroomAndTime.Count >= 2)
+                                {
+                                    //Debug.WriteLine(classroomAndTime);
+                                    itemBoxData["Classroom"] = classroomAndTime[0].InnerText.ToString(); // 博学楼-博学楼215
+                                    itemBoxData["Time"] = classroomAndTime[1].InnerText.ToString();      // 第4周 星期三
+                                }
+
+                                // 提取班级信息
+                                var className = itemBox.SelectSingleNode(".//div[contains(text(), '班级')]")?.InnerText.Trim();
+                                if (!string.IsNullOrEmpty(className))
+                                {
+                                    itemBoxData["ClassName"] = className; // 2024级软件技术3班
+                                }
+                                week[$"{SwitchWeek(i)}"] = itemBoxData;
+                            }
+                            else
+                            {
+                                week[$"{SwitchWeek(i)}"] = null;
+                            }
                         }
                     }
+                    rowData["date"] = week;
+                    schedule.Add(rowData);
                 }
-                rowData["date"] = week;
-                schedule.Add(rowData);
             }
-        }
 
-        // 转换为 JSON 格式
-        return JsonConvert.SerializeObject(schedule, Formatting.Indented);
-        //text.Text = json;
-        //Debug.WriteLine(json);
+            // 转换为 JSON 格式
+            return JsonConvert.SerializeObject(schedule, Formatting.Indented);
+            //text.Text = json;
+            //Debug.WriteLine(json);
+
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(ex.Message);
+            return string.Empty;
+        }
 
     }
 

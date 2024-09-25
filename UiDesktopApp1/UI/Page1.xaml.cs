@@ -59,13 +59,17 @@ public partial class Page1 : Page
         DateTime da = DateTime.Parse(rq);
         int daysInMonth = DateTime.DaysInMonth(da.Year, da.Month);
         int ri = da.Day;
-        Monday_column.Header = $"星期一({ri++})";
-        Tuesday_column.Header = $"星期二({ri++})";
-        Wednesday_column.Header = $"星期三({ri++})";
-        Thursday_column.Header = $"星期四({ri++})";
-        Friday_column.Header = $"星期五({ri++})";
-        Saturday_column.Header = $"星期六({ri++})";
-        Sunday_column.Header = $"星期日({ri})";
+        //if (++ri > daysInMonth)
+        //{
+        //    ri = 0;
+        //}
+        Monday_column.Header = $"星期一({(++ri > daysInMonth ? ri = 1 : ri)})";
+        Tuesday_column.Header = $"星期二({(++ri > daysInMonth ? ri = 1 : ri)})";
+        Wednesday_column.Header = $"星期三({(++ri> daysInMonth ? ri=1 : ri)})";
+        Thursday_column.Header = $"星期四({(++ri> daysInMonth ? ri = 1 : ri)})";
+        Friday_column.Header = $"星期五({(++ri> daysInMonth ? ri = 1 : ri)})";
+        Saturday_column.Header = $"星期六({(++ri> daysInMonth ? ri = 1 : ri)})";
+        Sunday_column.Header = $"星期日({(++ri> daysInMonth ? ri = 1 : ri)})";
         // 异步调用 Init 方法
         Debug.WriteLine(rq);
         var json = await MainWindow.Init(rq);

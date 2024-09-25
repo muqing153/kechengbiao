@@ -26,7 +26,9 @@ public class Api
     //    Console.WriteLine(response.Content);
     //    return string.Empty;
     //}
-
+    public static string bzb_jsxsd = "8B79E6DFBE060F142615897FF7441F1C";
+    public static string bzb_njw = "9EC84B8C460DD1F3EE7B4E7213681D0A";
+    public static string SERVERID = "122";
 
     public static async Task<string> get(string url, string[][] data)
     {
@@ -34,7 +36,7 @@ public class Api
         var request = new RestRequest("/jsxsd/framework/mainV_index_loadkb.htmlx",Method.Get);
         request.AddHeader("Pragma", "no-cache");
         request.AddHeader("X-Requested-With", "XMLHttpRequest");
-        request.AddHeader("Cookie", "bzb_jsxsd=692698C435C76D9594027498C7A405FE;bzb_njw=2FA8399F135C4263897A9A1ABA5FB555;SERVERID=123");
+        request.AddHeader("Cookie", $"bzb_jsxsd={bzb_jsxsd};bzb_njw={bzb_njw};SERVERID={SERVERID}");
         request.AddHeader("Accept", "*/*");
         request.AddHeader("Host", "10.1.2.1");
         request.AddHeader("Connection", "keep-alive");
