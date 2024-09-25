@@ -13,9 +13,6 @@ using System.Data.Common;
 
 namespace UiDesktopApp1.UI;
 
-/// <summary>
-/// Page1.xaml 的交互逻辑
-/// </summary>
 public partial class Page1 : Page
 {
     public ObservableCollection<GridTabData> gridTabDatas { get; set; }=new();
@@ -246,5 +243,10 @@ public partial class Page1 : Page
 
 
         }
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        new WebView().Show();
     }
 }

@@ -7,7 +7,6 @@
     xmlns:local="clr-namespace:UiDesktopApp1.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    d:DataContext="{d:DesignInstance Type=local:Page1}"
     KeyDown="Page_KeyDown"
     KeyUp="Page_KeyUp"
     mc:Ignorable="d">
@@ -22,6 +21,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <ui:TextBlock
                 x:Name="jianpan"
@@ -29,14 +29,21 @@
                 Foreground="White"
                 Text="按下" />
 
+            <ui:Button
+                Grid.Column="2"
+                Margin="0,0,13,0"
+                Click="Button_Click"
+                Content="登陆"
+                Icon="Fluent24" />
+
             <ComboBox
                 x:Name="zhoubox"
-                Grid.Column="2"
+                Grid.Column="3"
                 Margin="0,0,13,0"
                 SelectedIndex="0" />
             <ui:TextBlock
                 x:Name="itemtext"
-                Grid.Column="3"
+                Grid.Column="4"
                 VerticalAlignment="Center"
                 Foreground="White"
                 Text="当前时间" />
